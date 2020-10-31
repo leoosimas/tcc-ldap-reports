@@ -2,6 +2,7 @@ import tkinter as tk
 from tkinter import filedialog, Text
 from tkinter import ttk
 import os
+import ldap3
 
 root = tk.Tk()
 
@@ -21,20 +22,30 @@ label1.grid(column=0,row=1)
 label2 = ttk.Label(root,text='Password')
 label2.grid(column=0,row=2)
 
-server = tk.StringVar()
-serverEntered = ttk.Entry(root, width = 30, textvariable = server)
+
+serverEntered = ttk.Entry(root, width = 30)
 serverEntered.grid(column=1,row=0)
 
-user = tk.StringVar()
-userEntered = ttk.Entry(root, width = 30, textvariable = user)
+
+userEntered = ttk.Entry(root, width = 30)
 userEntered.grid(column=1,row=1)
 
-passwd = tk.StringVar()
-passwdEntered = ttk.Entry(root,show = "*", width = 30, textvariable = passwd)
+
+passwdEntered = ttk.Entry(root,show = "*", width = 30)
 passwdEntered.grid(column=1,row=2)
 
+def ClickMe():
+    print(passwdEntered.get(),userEntered.get(),serverEntered.get())
 
-connect = ttk.Button(root, text = "Connect", width=15)
+    conn = ldap3.Connection(serverEntered.get(), userEntered.get(), passwdEntered.get())
+
+    conn.bind()
+
+
+    
+
+
+connect = ttk.Button(root, text = "Connect", width=15,command = ClickMe)
 connect.grid(column= 3, row = 2)
 
 

@@ -13,37 +13,60 @@ user=input('User: ')
 passwd = getpass('Password: ')
 
 conn = ldap3.Connection(host, user=user, password=passwd)
-conn.bind()
 
-if conn.bind() == True:
-    print("Conectado ao Active Directory")
-else:
-    print("Credenciais inválidas, tente novamente")
+def get_connection(conn):
+    conn.bind()
 
-conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+    if conn.bind() == True:
+        print("Conectado ao Active Directory")
+    else:
+        print("Credenciais inválidas, tente novamente")
+        
+        return 0
+    
+    return conn.bind()
 
-search_result = conn.entries
+get_connection(conn)
 
-answer = input('Deseja gerar relatório?(Y/N)')
 
-if answer == 'Y':
+def get_data():    
 
-    with open(input('Nome do arquivo: '), mode='w') as csv_file:
-        fieldnames = ['username',
-                    'name',
-                    'Logon',
-                    'Logoff',
-                    ]
+    conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
-        writer = csv.DictWriter(csv_file,
-                                fieldnames=fieldnames)
-        writer.writeheader()
-        if len(search_result) > 0:
-            for entry in search_result:
-                writer.writerow({'username': entry['sAMAccountName'],
-                                    'name': entry['cn'],
-                                    'Logon': entry['lastLogon'],
-                                    'Logoff': entry['lastLogoff']
-                                })
-else:
-    print("Não gerou relatório")
+    search_result = conn.entries
+
+    return search_result
+
+search_result = get_data()
+
+def export_csv (search_result):
+
+    answer = input('Deseja gerar relatório?(Y/N)')
+
+    if answer == 'Y':
+
+        with open(input('Nome do arquivo: '), mode='w') as csv_file:
+            fieldnames = ['username',
+                        'name',
+                        'Logon',
+                        'Logoff',
+                        ]
+
+            writer = csv.DictWriter(csv_file,
+                                    fieldnames=fieldnames)
+            writer.writeheader()
+            if len(search_result) > 0:
+                for entry in search_result:
+                    writer.writerow({'username': entry['sAMAccountName'],
+                                        'name': entry['cn'],
+                                        'Logon': entry['lastLogon'],
+                                        'Logoff': entry['lastLogoff']
+                                    })
+        
+        print("Relatório gerado em csv")
+    else:
+        print("Não gerou relatório")
+
+    return
+
+export_csv(search_result)

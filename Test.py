@@ -2,9 +2,7 @@ import ldap3
 from os import path
 from getpass import getpass
 import sys
-import json
-import csv
-import unicodecsv
+import unicodecsv as csv
 
 
 

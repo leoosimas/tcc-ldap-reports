@@ -35,18 +35,25 @@ passwdEntered = ttk.Entry(root,show = "*", width = 30)
 passwdEntered.grid(column=1,row=2)
 
 def ClickMe():
-    print(passwdEntered.get(),userEntered.get(),serverEntered.get())
-
+    
     conn = ldap3.Connection(serverEntered.get(), userEntered.get(), passwdEntered.get())
 
     conn.bind()
-
-
     
+    conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+
+    search_result = conn.entries
+
+    print(search_result)
+
+    return search_result
 
 
 connect = ttk.Button(root, text = "Connect", width=15,command = ClickMe)
-connect.grid(column= 3, row = 2)
+connect.grid(column= 3, row = 1)
+
+generate = ttk.Button(root, text = "Generate Report", width=15)
+generate.grid(column=3, row=2)
 
 
 root.mainloop()

@@ -4,6 +4,7 @@ from getpass import getpass
 import sys
 import json
 import csv
+import unicodecsv
 
 
 
@@ -22,11 +23,24 @@ else:
 
 conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
-data = []
+search_result = conn.entries
 
-for entry in conn.entries:
-   data.append(entry)
 
-with open('report.csv', 'w', newline='') as myfile:
-     wr = csv.writer(myfile, quoting=csv.QUOTE_ALL)
-     wr.writerow(data)
+
+with open('report2.csv', mode='w') as csv_file:
+    fieldnames = ['username',
+                  'name',
+                  'Logon',
+                  'Logoff',
+                  ]
+
+    writer = csv.DictWriter(csv_file,
+                            fieldnames=fieldnames)
+    writer.writeheader()
+    if len(search_result) > 0:
+        for entry in search_result:
+            writer.writerow({'username': entry['sAMAccountName'],
+                                'name': entry['cn'],
+                                'Logon': entry['lastLogon'],
+                                'Logoff': entry['lastLogoff']
+                            })

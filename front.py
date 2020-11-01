@@ -1,10 +1,6 @@
 import tkinter as tk
-from tkinter import filedialog, Text
-from tkinter import ttk
-import os
-import ldap3
-import csv
-import unicodecsv
+from tkinter import filedialog, Text, ttk
+import os,ldap3,csv,unicodecsv
 
 
 root = tk.Tk()
@@ -88,6 +84,7 @@ def generate_me():
 
 connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
 connect.grid(column= 1, row = 4)
+
 generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
 generate.grid(column= 1, row =5)
 

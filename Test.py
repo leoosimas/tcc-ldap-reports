@@ -3,11 +3,12 @@ from os import path
 from getpass import getpass
 import sys
 import unicodecsv as csv
+import csv
 
 
 
-host='192.168.1.19'
-host = ldap3.Server(host)
+host='192.168.15.120'
+host = ldap3.Server(host,port=636, use_ssl = True)
 user='administrator@tcclab.com'
 passwd = '1234Qwer'
 

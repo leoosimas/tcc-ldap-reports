@@ -66,6 +66,7 @@ def generate_me():
                   'name',
                   'Logon',
                   'Logoff',
+                  'Logon Count'
                     ]
 
     writer = csv.DictWriter(csv_file,
@@ -76,7 +77,8 @@ def generate_me():
             writer.writerow({'username': entry['sAMAccountName'],
                                 'name': entry['cn'],
                                 'Logon': entry['lastLogon'],
-                                'Logoff': entry['lastLogoff']
+                                'Logoff': entry['lastLogoff'],
+                                'Logon Count': entry['logonCount']
                             })
 
 

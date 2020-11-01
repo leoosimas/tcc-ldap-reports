@@ -8,9 +8,14 @@ import csv
 
 
 host= input('Server: ')
-host = ldap3.Server(host)
 user=input('User: ')
 passwd = getpass('Password: ')
+answer = input('Utilizar conexão via LDAPs (LDAP over TLS)? (Y/N) ')
+
+if answer == 'Y':
+    host = ldap3.Server(host,port=636, use_ssl = True)
+else:
+    host = ldap3.Server(host)
 
 conn = ldap3.Connection(host, user=user, password=passwd)
 
@@ -50,6 +55,7 @@ def export_csv (search_result):
                         'name',
                         'Logon',
                         'Logoff',
+                        'Log Count',
                         ]
 
             writer = csv.DictWriter(csv_file,
@@ -60,7 +66,8 @@ def export_csv (search_result):
                     writer.writerow({'username': entry['sAMAccountName'],
                                         'name': entry['cn'],
                                         'Logon': entry['lastLogon'],
-                                        'Logoff': entry['lastLogoff']
+                                        'Logoff': entry['lastLogoff'],
+                                        'Log Count': entry['logonCount']
                                     })
         
         print("Relatório gerado em csv")

@@ -37,16 +37,32 @@ userEntered.grid(column=1,row=2)
 passwdEntered = ttk.Entry(root,show = "*", width = 30)
 passwdEntered.grid(column=1,row=3)
 
-def ClickMe():
-    
-    conn = ldap3.Connection(serverEntered.get(), userEntered.get(), passwdEntered.get())
+
+#função para conectar via ldap e puxar todos as informações do Active Directory
+def click_me():
+
+    server= serverEntered.get()
+    user= userEntered.get()
+    passwd =passwdEntered.get()
+
+    print(server,user,passwd)
+
+    conn = ldap3.Connection(server=server, user=user, password=passwd)
 
     conn.bind()
 
     conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
     search_result = conn.entries
-           
+
+    print(search_result)
+    
+    
+    return search_result
+
+#função para gerar relatório em csv
+def generate_me():
+
     csv_file = filedialog.asksaveasfile(mode='w', defaultextension=".csv") 
     if csv_file is None: 
         return
@@ -59,16 +75,22 @@ def ClickMe():
     writer = csv.DictWriter(csv_file,
                             fieldnames=fieldnames)
     writer.writeheader()
-    if len(search_result) > 0:
-        for entry in search_result:
+    if len(click_me()) > 0:
+        for entry in click_me():
             writer.writerow({'username': entry['sAMAccountName'],
                                 'name': entry['cn'],
                                 'Logon': entry['lastLogon'],
                                 'Logoff': entry['lastLogoff']
                             })
 
-connect = ttk.Button(root, text = "Generate Report", width=30,command = ClickMe)
+
+
+
+connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
 connect.grid(column= 1, row = 4)
+generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
+generate.grid(column= 1, row =5)
+
 
 
 root.mainloop()

@@ -15,6 +15,9 @@ label.grid(column=1,row=0)
 label = ttk.Label(root,text='Server')
 label.grid(column=0,row=1)
 
+
+
+
 label1 = ttk.Label(root,text='User')
 label1.grid(column=0,row=2)
 
@@ -37,22 +40,25 @@ passwdEntered.grid(column=1,row=3)
 #função para conectar via ldap e puxar todos as informações do Active Directory
 def click_me():
 
-    server= serverEntered.get()
+
+    if var1.get() == 1:
+        server= ldap3.Server(serverEntered.get(), port=636, use_ssl=True)
+    else:
+        server= serverEntered.get()
+    
     user= userEntered.get()
     passwd =passwdEntered.get()
 
-    print(server,user,passwd)
 
     conn = ldap3.Connection(server=server, user=user, password=passwd)
 
     conn.bind()
 
-    conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+    conn.search('dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
     search_result = conn.entries
 
     print(search_result)
-    
     
     return search_result
 
@@ -81,6 +87,11 @@ def generate_me():
                                 'Logon Count': entry['logonCount']
                             })
 
+
+
+var1 = tk.IntVar()
+checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1)
+checkEntered.grid(column=2,row=1)
 
 
 

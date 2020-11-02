@@ -58,8 +58,9 @@ def click_me():
     conn.bind()
 
     
+    
 
-    if conn.bind() == True :
+    if conn.bind() == True:    
 
         domain = re.split('[@.]',user)
 
@@ -73,24 +74,14 @@ def click_me():
         search_result = conn.entries
 
         print(search_result)
-        
+
         return search_result
     else:
         conn.unbind()
         tk.messagebox.showerror("Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
         if root.counter == 3:
             root.destroy()
-        
-        
-    
-            
-            
-
-
-        
-        
-        
-
+                   
 #função para gerar relatório em csv
 def generate_me():
 
@@ -116,19 +107,18 @@ def generate_me():
                                 'Logon Count': entry['logonCount']
                             })
 
-
+    tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")
+    
 
 var1 = tk.IntVar()
 checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1)
 checkEntered.grid(column=2,row=1)
 
-
-
 connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
 connect.grid(column= 1, row = 4)
 
 generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
-generate.grid(column= 1, row =5)
+generate.grid(column= 1, row =6)
 
 
 

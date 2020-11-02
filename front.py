@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import filedialog, Text, ttk
+from tkinter import filedialog, Text, ttk,messagebox
 import os,ldap3,csv,unicodecsv, re
 
 
@@ -38,8 +38,11 @@ passwdEntered.grid(column=1,row=3)
 
 
 #função para conectar via ldap e puxar todos as informações do Active Directory
+root.counter = 0
+
 def click_me():
 
+    root.counter += 1
 
     if var1.get() == 1:
         server= ldap3.Server(serverEntered.get(), port=636, use_ssl=True)
@@ -54,20 +57,39 @@ def click_me():
 
     conn.bind()
 
-    domain = re.split('[@.]',user)
-
-    domain_one = 'dc=' + domain[1]
-    domain_two = 'dc=' + domain[2]
-
-    domain = domain_one + ',' + domain_two
-
-    conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
-
-    search_result = conn.entries
-
-    print(search_result)
     
-    return search_result
+
+    if conn.bind() == True :
+
+        domain = re.split('[@.]',user)
+
+        domain_one = 'dc=' + domain[1]
+        domain_two = 'dc=' + domain[2]
+
+        domain = domain_one + ',' + domain_two
+
+        conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+
+        search_result = conn.entries
+
+        print(search_result)
+        
+        return search_result
+    else:
+        conn.unbind()
+        tk.messagebox.showerror("Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
+        if root.counter == 3:
+            root.destroy()
+        
+        
+    
+            
+            
+
+
+        
+        
+        
 
 #função para gerar relatório em csv
 def generate_me():

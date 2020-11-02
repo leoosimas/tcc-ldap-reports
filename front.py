@@ -16,8 +16,6 @@ label = ttk.Label(root,text='Server')
 label.grid(column=0,row=1)
 
 
-
-
 label1 = ttk.Label(root,text='User')
 label1.grid(column=0,row=2)
 
@@ -52,33 +50,44 @@ def click_me():
     user= userEntered.get()
     passwd =passwdEntered.get()
 
+    domain = re.split('[@.]',user)
 
-    conn = ldap3.Connection(server=server, user=user, password=passwd)
-
-    conn.bind()
-
-    
-    if conn.bind() == True:    
-
-        domain = re.split('[@.]',user)
-
-        domain_one = 'dc=' + domain[1]
-        domain_two = 'dc=' + domain[2]
-
-        domain = domain_one + ',' + domain_two
-
-        conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
-
-        search_result = conn.entries
-
-        print(search_result)
-
-        return search_result
-    else:
-        conn.unbind()
-        tk.messagebox.showerror("Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
+    if domain[0] != 'administrator':
+        tk.messagebox.showerror("LGR - Error", "Apenas o user Admin deste domínio \npode conectar e requistar os dados \nTentativas restantes " f'{3 - root.counter}') 
         if root.counter == 3:
             root.destroy()
+    else:
+        conn = ldap3.Connection(server=server, user=user, password=passwd)
+        conn.bind()  
+
+      
+        if conn.bind() == True:   
+
+            if root.counter <= 3:
+                tk.messagebox.showinfo("LGR - Connected", "Conectado ao Active Directory") 
+
+
+            domain_one = 'dc=' + domain[1]
+            domain_two = 'dc=' + domain[2]
+
+            domain = domain_one + ',' + domain_two
+
+            conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+
+            search_result = conn.entries
+
+            root.counter = root.counter * 8
+
+            
+
+            print(search_result)
+
+            return search_result
+        else:
+            conn.unbind()
+            tk.messagebox.showerror("Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
+            if root.counter == 3:
+                root.destroy()
                    
 #função para gerar relatório em csv
 def generate_me():

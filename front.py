@@ -1,7 +1,7 @@
 import tkinter as tk
 from tkinter import filedialog, Text, ttk,messagebox
 import os,ldap3,csv,unicodecsv, re
-
+import sys
 
 root = tk.Tk()
 
@@ -58,8 +58,6 @@ def click_me():
     conn.bind()
 
     
-    
-
     if conn.bind() == True:    
 
         domain = re.split('[@.]',user)

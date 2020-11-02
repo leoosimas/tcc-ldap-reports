@@ -2,8 +2,7 @@ import ldap3
 from os import path
 from getpass import getpass
 import sys
-import unicodecsv
-import csv
+import unicodecsv,csv,re
 
 
 
@@ -34,9 +33,16 @@ def get_connection(conn):
 get_connection(conn)
 
 
-def get_data():    
+def get_data(): 
 
-    conn.search('cn=Users,dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+    domain = re.split('[@.]',user)
+
+    domain_one = 'dc=' + domain[1]
+    domain_two = 'dc=' + domain[2]
+
+    domain = domain_one + ',' + domain_two
+
+    conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
     search_result = conn.entries
 

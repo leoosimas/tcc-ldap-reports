@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, Text, ttk
-import os,ldap3,csv,unicodecsv
+import os,ldap3,csv,unicodecsv, re
 
 
 root = tk.Tk()
@@ -54,7 +54,14 @@ def click_me():
 
     conn.bind()
 
-    conn.search('dc=tcclab,dc=com', '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+    domain = re.split('[@.]',user)
+
+    domain_one = 'dc=' + domain[1]
+    domain_two = 'dc=' + domain[2]
+
+    domain = domain_one + ',' + domain_two
+
+    conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
     search_result = conn.entries
 

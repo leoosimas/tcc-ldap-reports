@@ -1,85 +1,132 @@
-import ldap3
-from os import path
-from getpass import getpass
+import tkinter as tk
+from tkinter import filedialog, Text, ttk,messagebox
+import os,ldap3,csv,unicodecsv, re
 import sys
-import unicodecsv,csv,re
+
+root = tk.Tk()
+
+root.title("LDAP REPORT GENERATOR")
+root.minsize(300,150)
 
 
+label = ttk.Label(root,text='LDAP REPORT GENERATOR')
+label.grid(column=1,row=0)
 
-host= input('Server: ')
-user=input('User: ')
-passwd = getpass('Password: ')
-answer = input('Utilizar conexão via LDAPs (LDAP over TLS)? (Y/N) ')
+label = ttk.Label(root,text='Server')
+label.grid(column=0,row=1)
 
-if answer == 'Y':
-    host = ldap3.Server(host,port=636, use_ssl = True)
-else:
-    host = ldap3.Server(host)
 
-conn = ldap3.Connection(host, user=user, password=passwd)
+label1 = ttk.Label(root,text='User')
+label1.grid(column=0,row=2)
 
-def get_connection(conn):
-    conn.bind()
+label2 = ttk.Label(root,text='Password')
+label2.grid(column=0,row=3)
 
-    if conn.bind() == True:
-        print("Conectado ao Active Directory")
+
+serverEntered = ttk.Entry(root, width = 30)
+serverEntered.grid(column=1,row=1)
+
+
+userEntered = ttk.Entry(root, width = 30)
+userEntered.grid(column=1,row=2)
+
+
+passwdEntered = ttk.Entry(root,show = "*", width = 30)
+passwdEntered.grid(column=1,row=3)
+
+
+#função para conectar via ldap e puxar todos as informações do Active Directory
+root.counter = 0
+
+def click_me():
+
+    root.counter += 1
+
+    if var1.get() == 1:
+        server= ldap3.Server(serverEntered.get(), port=636, use_ssl=True)
     else:
-        print("Credenciais inválidas, tente novamente")
-        
-        return 0
+        server= serverEntered.get()
     
-    return conn.bind()
-
-get_connection(conn)
-
-
-def get_data(): 
+    user= userEntered.get()
+    passwd =passwdEntered.get()
 
     domain = re.split('[@.]',user)
 
-    domain_one = 'dc=' + domain[1]
-    domain_two = 'dc=' + domain[2]
-
-    domain = domain_one + ',' + domain_two
-
-    conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
-
-    search_result = conn.entries
-
-    return search_result
-
-search_result = get_data()
-
-def export_csv (search_result):
-
-    answer = input('Deseja gerar relatório?(Y/N)')
-
-    if answer == 'Y':
-
-        with open(input('Nome do arquivo: '), mode='w') as csv_file:
-            fieldnames = ['username',
-                        'name',
-                        'Logon',
-                        'Logoff',
-                        'Log Count',
-                        ]
-
-            writer = csv.DictWriter(csv_file,
-                                    fieldnames=fieldnames)
-            writer.writeheader()
-            if len(search_result) > 0:
-                for entry in search_result:
-                    writer.writerow({'username': entry['sAMAccountName'],
-                                        'name': entry['cn'],
-                                        'Logon': entry['lastLogon'],
-                                        'Logoff': entry['lastLogoff'],
-                                        'Log Count': entry['logonCount']
-                                    })
-        
-        print("Relatório gerado em csv")
+    if domain[0] != 'administrator':
+        tk.messagebox.showerror("LGR - Error", "Apenas o user Admin deste domínio \npode conectar e requistar os dados \nTentativas restantes " f'{3 - root.counter}') 
+        if root.counter == 3:
+            root.destroy()
     else:
-        print("Não gerou relatório")
+        conn = ldap3.Connection(server=server, user=user, password=passwd)
+        conn.bind()  
 
-    return
+      
+        if conn.bind() == True:   
 
-export_csv(search_result)
+            if root.counter <= 3:
+                tk.messagebox.showinfo("LGR - Connected", "Conectado ao Active Directory") 
+
+
+            domain_one = 'dc=' + domain[1]
+            domain_two = 'dc=' + domain[2]
+
+            domain = domain_one + ',' + domain_two
+
+            conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+
+            search_result = conn.entries
+
+            root.counter = root.counter * 8
+
+            
+
+            print(search_result)
+
+            return search_result
+        else:
+            conn.unbind()
+            tk.messagebox.showerror("LGR - Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
+            if root.counter == 3:
+                root.destroy()
+                   
+#função para gerar relatório em csv
+def generate_me():
+
+    csv_file = filedialog.asksaveasfile(mode='w', defaultextension=".csv") 
+    if csv_file is None: 
+        return
+    fieldnames = ['username',
+                  'name',
+                  'Logon',
+                  'Logoff',
+                  'Logon Count'
+                    ]
+
+    writer = csv.DictWriter(csv_file,
+                            fieldnames=fieldnames)
+    writer.writeheader()
+    if len(click_me()) > 0:
+        for entry in click_me():
+            writer.writerow({'username': entry['sAMAccountName'],
+                                'name': entry['cn'],
+                                'Logon': entry['lastLogon'],
+                                'Logoff': entry['lastLogoff'],
+                                'Logon Count': entry['logonCount']
+                            })
+
+    tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")
+    
+
+var1 = tk.IntVar()
+checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1)
+checkEntered.grid(column=2,row=1)
+
+connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
+connect.grid(column= 1, row = 4)
+
+generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
+generate.grid(column= 1, row =6)
+
+
+
+root.mainloop()

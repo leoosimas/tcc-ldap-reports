@@ -58,42 +58,46 @@ def click_me():
     user= userEntered.get()
     passwd =passwdEntered.get()
 
-    domain = re.split('[@.]',user)
-
-    serverEntered.delete(0, tk.END)
-    userEntered.delete(0, tk.END)
-    passwdEntered.delete(0, tk.END)
-
-    if domain[0] != 'administrator':
-        tk.messagebox.showerror("LGR - Error", "Apenas o user Admin deste domínio \npode conectar e requistar os dados \nTentativas restantes " f'{3 - root.counter}') 
-        if root.counter == 3:
-            root.destroy()
+    if user == '' or server == '' or passwd == '':
+        tk.messagebox.showerror("LGR - Error", "Um ou mais campos estão em branco \npor favor preencher para conectar ao Active Directory")
     else:
-        conn = ldap3.Connection(server=server, user=user, password=passwd)
-        conn.bind()  
 
-      
-        if conn.bind() == True:   
+        domain = re.split('[@.]',user)
 
-            if root.counter ==1:
+        serverEntered.delete(0, tk.END)
+        userEntered.delete(0, tk.END)
+        passwdEntered.delete(0, tk.END)
+
+        if domain[0] != 'administrator':
+            tk.messagebox.showerror("LGR - Error", "Apenas o user Admin deste domínio \npode conectar e requistar os dados \nTentativas restantes " f'{3 - root.counter}') 
+            if root.counter == 3:
+                root.destroy()
+        else:
+            conn = ldap3.Connection(server=server, user=user, password=passwd)
+            conn.bind()  
+
+        
+            if conn.bind() == True:   
+
+                
                 tk.messagebox.showinfo("LGR - Connected", "Conectado ao Active Directory") 
 
 
-            domain_one = 'dc=' + domain[1]
-            domain_two = 'dc=' + domain[2]
+                domain_one = 'dc=' + domain[1]
+                domain_two = 'dc=' + domain[2]
 
-            domain = domain_one + ',' + domain_two
+                domain = domain_one + ',' + domain_two
 
-            conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+                conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
-            search_result = conn.entries
+                search_result = conn.entries
 
-            return search_result      
-        else:
-            conn.unbind()
-            tk.messagebox.showerror("LGR - Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
-            if root.counter == 3:
-                root.destroy()
+                return search_result      
+            else:
+                conn.unbind()
+                tk.messagebox.showerror("LGR - Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
+                if root.counter == 3:
+                    root.destroy()
 
 
 #função para gerar relatório em csv
@@ -108,7 +112,8 @@ def generate_me():
                   'name',
                   'Logon',
                   'Logoff',
-                  'Logon Count'
+                  'Logon Count',
+                  'Bad Password Count'
                     ]
 
     writer = csv.DictWriter(csv_file,
@@ -120,7 +125,8 @@ def generate_me():
                                 'name': entry['cn'],
                                 'Logon': entry['lastLogon'],
                                 'Logoff': entry['lastLogoff'],
-                                'Logon Count': entry['logonCount']
+                                'Logon Count': entry['logonCount'],
+                                'Bad Password Count': entry ['badPwdCount']
                             })
 
     tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")

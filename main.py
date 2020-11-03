@@ -117,7 +117,8 @@ def generate_me():
                   'Logon',
                   'Logoff',
                   'Logon Count',
-                  'Bad Password Count'
+                  'Bad Password Count',
+                  'Member'
                     ]
 
     writer = csv.DictWriter(csv_file,
@@ -125,13 +126,17 @@ def generate_me():
     writer.writeheader()
     if len(search_result) > 0:
         for entry in search_result:
-            writer.writerow({'username': entry['sAMAccountName'],
-                                'name': entry['cn'],
-                                'Logon': entry['lastLogon'],
-                                'Logoff': entry['lastLogoff'],
-                                'Logon Count': entry['logonCount'],
-                                'Bad Password Count': entry ['badPwdCount']
-                            })
+            try:
+                writer.writerow({'username': entry['sAMAccountName'],
+                                    'name': entry['cn'],
+                                    'Logon': entry['lastLogon'],
+                                    'Logoff': entry['lastLogoff'],
+                                    'Logon Count': entry['logonCount'],
+                                    'Bad Password Count': entry ['badPwdCount'],
+                                    'Member': entry['memberof']
+                                })
+            except:
+                pass
 
     tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")
 

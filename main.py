@@ -27,20 +27,28 @@ serverEntered = ttk.Entry(root, width = 30)
 serverEntered.grid(column=1,row=1)
 
 
+
 userEntered = ttk.Entry(root, width = 30)
 userEntered.grid(column=1,row=2)
+
 
 
 passwdEntered = ttk.Entry(root,show = "*", width = 30)
 passwdEntered.grid(column=1,row=3)
 
 
+
 #função para conectar via ldap e puxar todos as informações do Active Directory
 root.counter = 0
+
+
 
 def click_me():
 
     root.counter += 1
+
+    global search_result
+
 
     if var1.get() == 1:
         server= ldap3.Server(serverEntered.get(), port=636, use_ssl=True)
@@ -51,6 +59,10 @@ def click_me():
     passwd =passwdEntered.get()
 
     domain = re.split('[@.]',user)
+
+    serverEntered.delete(0, tk.END)
+    userEntered.delete(0, tk.END)
+    passwdEntered.delete(0, tk.END)
 
     if domain[0] != 'administrator':
         tk.messagebox.showerror("LGR - Error", "Apenas o user Admin deste domínio \npode conectar e requistar os dados \nTentativas restantes " f'{3 - root.counter}') 
@@ -63,7 +75,7 @@ def click_me():
       
         if conn.bind() == True:   
 
-            if root.counter <= 3:
+            if root.counter ==1:
                 tk.messagebox.showinfo("LGR - Connected", "Conectado ao Active Directory") 
 
 
@@ -76,21 +88,18 @@ def click_me():
 
             search_result = conn.entries
 
-            root.counter = root.counter * 8
-
-            
-
-            print(search_result)
-
-            return search_result
+            return search_result      
         else:
             conn.unbind()
             tk.messagebox.showerror("LGR - Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
             if root.counter == 3:
                 root.destroy()
-                   
+
+
 #função para gerar relatório em csv
 def generate_me():
+
+    print(search_result)
 
     csv_file = filedialog.asksaveasfile(mode='w', defaultextension=".csv") 
     if csv_file is None: 
@@ -105,8 +114,8 @@ def generate_me():
     writer = csv.DictWriter(csv_file,
                             fieldnames=fieldnames)
     writer.writeheader()
-    if len(click_me()) > 0:
-        for entry in click_me():
+    if len(search_result) > 0:
+        for entry in search_result:
             writer.writerow({'username': entry['sAMAccountName'],
                                 'name': entry['cn'],
                                 'Logon': entry['lastLogon'],
@@ -115,18 +124,20 @@ def generate_me():
                             })
 
     tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")
-    
 
+    
 var1 = tk.IntVar()
 checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1)
 checkEntered.grid(column=2,row=1)
 
+search_result = 0
 connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
 connect.grid(column= 1, row = 4)
 
 generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
 generate.grid(column= 1, row =6)
 
-
+label3 = ttk.Label(root,text='version 1.0.3')
+label3.grid(column=1,row=8)
 
 root.mainloop()

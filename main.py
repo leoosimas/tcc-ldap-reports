@@ -45,7 +45,7 @@ root.counter = 0
 
 def click_me():
 
-    root.counter += 1
+    
 
     global search_result
 
@@ -64,11 +64,10 @@ def click_me():
 
         domain = re.split('[@.]',user)
 
-        serverEntered.delete(0, tk.END)
-        userEntered.delete(0, tk.END)
-        passwdEntered.delete(0, tk.END)
+        
 
         if domain[0] != 'administrator':
+            root.counter += 1
             tk.messagebox.showerror("LGR - Error", "Apenas o user Admin deste domínio \npode conectar e requistar os dados \nTentativas restantes " f'{3 - root.counter}') 
             if root.counter == 3:
                 root.destroy()
@@ -81,6 +80,10 @@ def click_me():
 
                 
                 tk.messagebox.showinfo("LGR - Connected", "Conectado ao Active Directory") 
+
+                serverEntered.delete(0, tk.END)
+                userEntered.delete(0, tk.END)
+                passwdEntered.delete(0, tk.END)
 
 
                 domain_one = 'dc=' + domain[1]
@@ -95,6 +98,7 @@ def click_me():
                 return search_result      
             else:
                 conn.unbind()
+                root.counter += 1
                 tk.messagebox.showerror("LGR - Error", "Credenciais inválidas \n Tente novamente \n nº de tentativas restantes " + f'{3 - root.counter}')
                 if root.counter == 3:
                     root.destroy()

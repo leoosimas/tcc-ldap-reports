@@ -118,6 +118,7 @@ def generate_me():
                   'Logoff',
                   'Logon Count',
                   'Bad Password Count',
+                  'Last Invalid Password',
                   'Member'
                     ]
 
@@ -132,7 +133,8 @@ def generate_me():
                                     'Logon': entry['lastLogon'],
                                     'Logoff': entry['lastLogoff'],
                                     'Logon Count': entry['logonCount'],
-                                    'Bad Password Count': entry ['badPwdCount'],
+                                    'Bad Password Count': entry['badPwdCount'],
+                                    'Last Invalid Password': entry['badPasswordTime'],
                                     'Member': entry['memberof']
                                 })
             except:

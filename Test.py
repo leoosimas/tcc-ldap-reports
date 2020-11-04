@@ -9,7 +9,7 @@ import re
 
 
 
-host='192.168.15.120'
+host='192.168.1.19'
 host = ldap3.Server(host,port=636, use_ssl = True)
 user='administrator@tcclab.com'
 passwd = '1234Qwer'
@@ -35,13 +35,19 @@ conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
 
 search_result = conn.entries
 
+for entry in search_result:
+    try:
+        print(entry['memberOf'])
+    except:
+        pass
 
 
-with open('report2.csv', mode='w') as csv_file:
+
+'''with open('report2.csv', mode='w') as csv_file:
     fieldnames = ['username',
                   'name',
                   'Logon',
-                  'Logoff',
+                  'Logoff'
                   ]
 
     writer = csv.DictWriter(csv_file,
@@ -53,4 +59,4 @@ with open('report2.csv', mode='w') as csv_file:
                                 'name': entry['cn'],
                                 'Logon': entry['lastLogon'],
                                 'Logoff': entry['lastLogoff']
-                            })
+                            })'''

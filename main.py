@@ -113,6 +113,7 @@ def click_me():
 def generate_me():
 
     print(search_result)
+    
 
     csv_file = filedialog.asksaveasfile(mode='w', defaultextension=".csv") 
     if csv_file is None: 
@@ -214,7 +215,6 @@ var2 = tk.IntVar()
 checkEntered = ttk.Checkbutton(root, text="Auditor Mode", onvalue = 1, offvalue = 0, variable=var2, width=15)
 checkEntered.grid(column=2,row=2, padx=8)
 
-search_result = 0
 connect = ttk.Button(root, text = "Connect", width=25, style = 'TButton', command =click_me)
 connect.grid(column= 1, row = 4,pady=3)
 

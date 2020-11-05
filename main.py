@@ -112,10 +112,12 @@ def generate_me():
     csv_file = filedialog.asksaveasfile(mode='w', defaultextension=".csv") 
     if csv_file is None: 
         return
-    fieldnames = ['username',
-                  'name',
-                  'Logon',
-                  'Logoff',
+    fieldnames = ['Username',
+                  'Name',
+                  'Title',
+                  'Department',
+                  'Last Logon',
+                  'Last Logoff',
                   'Logon Count',
                   'Bad Password Count',
                   'Last Invalid Password',
@@ -128,10 +130,12 @@ def generate_me():
     if len(search_result) > 0:
         for entry in search_result:
             try:
-                writer.writerow({'username': entry['sAMAccountName'],
-                                    'name': entry['cn'],
-                                    'Logon': entry['lastLogon'],
-                                    'Logoff': entry['lastLogoff'],
+                writer.writerow({'Username': entry['sAMAccountName'],
+                                    'Name': entry['cn'],
+                                    'Title': entry['title'],
+                                    'Department': entry['department'],
+                                    'Last Logon': entry['lastLogon'],
+                                    'Last Logoff': entry['lastLogoff'],
                                     'Logon Count': entry['logonCount'],
                                     'Bad Password Count': entry['badPwdCount'],
                                     'Last Invalid Password': entry['badPasswordTime'],

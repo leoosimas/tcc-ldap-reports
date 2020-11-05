@@ -27,3 +27,9 @@ LRG is a python program created to generate report files in csv to monitoring an
          1. Only Administrator can request reports
          
          2. New pop-up alerts
+
+05/11/2020 - version 1.0.4
+
+    New features:
+
+         1. New Auditor Mode!

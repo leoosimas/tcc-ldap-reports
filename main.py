@@ -91,7 +91,13 @@ def click_me():
 
                 domain = domain_one + ',' + domain_two
 
-                conn.search(domain, '(&(objectclass=person))', attributes=ldap3.ALL_ATTRIBUTES)
+                if var2.get() == 1:
+
+                    lista_atributos = ['sAMAccountName','cn', 'title','department','lastLogon','lastLogoff','logonCount','badPwdCount','badPasswordTime','memberof','manager','directReports','mail','telephoneNumber','whenCreated','whenChanged','dSCorePropagationData','company','objectClass', 'objectCategory','accountExpires']
+                else:
+                    lista_atributos = ['sAMAccountName','cn','title','mail','telephoneNumber','department','lastLogon','logonCount','memberof','manager']
+
+                conn.search(domain, '(&(objectclass=person))', attributes=lista_atributos)
 
                 search_result = conn.entries
 
@@ -112,44 +118,96 @@ def generate_me():
     csv_file = filedialog.asksaveasfile(mode='w', defaultextension=".csv") 
     if csv_file is None: 
         return
-    fieldnames = ['Username',
-                  'Name',
-                  'Title',
-                  'Department',
-                  'Last Logon',
-                  'Last Logoff',
-                  'Logon Count',
-                  'Bad Password Count',
-                  'Last Invalid Password',
-                  'Member'
-                    ]
+    if var2.get()==1:
+        
+        fieldnames = ['Company', 
+                    'Username',
+                    'Name',
+                    'Title',
+                    'Email',
+                    'Telephone',
+                    'Department',
+                    'Manager',
+                    'Last Logon',
+                    'Last Logoff',
+                    'Logon Count',
+                    'Bad Password Count',
+                    'Last Invalid Password',
+                    'Member',
+                    'Direct Reports',
+                    'Created in',
+                    'Last Change',
+                    'Object Class',
+                    'Account Expires'
+                        ]
 
-    writer = csv.DictWriter(csv_file,
-                            fieldnames=fieldnames)
-    writer.writeheader()
-    if len(search_result) > 0:
-        for entry in search_result:
-            try:
-                writer.writerow({'Username': entry['sAMAccountName'],
+        writer = csv.DictWriter(csv_file,
+                                fieldnames=fieldnames)
+        writer.writeheader()
+        if len(search_result) > 0:
+            for entry in search_result:
+                writer.writerow({'Company': entry['company'] if type(entry['company']) is not list else '',
+                                    'Username': entry['sAMAccountName'],
                                     'Name': entry['cn'],
-                                    'Title': entry['title'],
-                                    'Department': entry['department'],
+                                    'Title': entry['title'] if type(entry['title']) is not list else '',
+                                    'Email': entry['mail']if type(entry['mail']) is not list else '',
+                                    'Telephone': entry['telephoneNumber']if type(entry['telephoneNumber']) is not list else '',
+                                    'Department': entry['department'] if type(entry['department']) is not list else '',
+                                    'Manager': entry['manager']if type(entry['manager']) is not list else '',
                                     'Last Logon': entry['lastLogon'],
                                     'Last Logoff': entry['lastLogoff'],
                                     'Logon Count': entry['logonCount'],
                                     'Bad Password Count': entry['badPwdCount'],
                                     'Last Invalid Password': entry['badPasswordTime'],
-                                    'Member': entry['memberof']
+                                    'Member': entry['memberof']if type(entry['memberof']) is not list else '',
+                                    'Direct Reports':entry['directReports'] if type(entry['directReports']) is not list else '',
+                                    'Created in':entry['whenCreated'] if type(entry['whenCreated']) is not list else '',
+                                    'Last Change':entry['whenChanged'] if type(entry['whenChanged']) is not list else '',
+                                    'Object Class':entry['objectClass'] if type(entry['objectClass']) is not list else '',
+                                    'Account Expires': entry['accountExpires'] if type(entry['accountExpires']) is not list else ''
                                 })
-            except:
-                pass
+    else:
+        fieldnames = ['Username',
+                    'Name',
+                    'Title',
+                    'Email',
+                    'Telephone',
+                    'Department',
+                    'Manager',
+                    'Last Logon',
+                    'Logon Count',
+                    'Member',
+                        ]
+
+        writer = csv.DictWriter(csv_file,
+                                fieldnames=fieldnames)
+        writer.writeheader()
+        if len(search_result) > 0:
+            for entry in search_result:
+                writer.writerow({'Username': entry['sAMAccountName'],
+                                    'Name': entry['cn'],
+                                    'Title': entry['title'] if type(entry['title']) is not list else '',
+                                    'Email': entry['mail']if type(entry['mail']) is not list else '',
+                                    'Telephone': entry['telephoneNumber']if type(entry['telephoneNumber']) is not list else '',
+                                    'Department': entry['department'] if type(entry['department']) is not list else '',
+                                    'Manager': entry['manager']if type(entry['manager']) is not list else '',
+                                    'Last Logon': entry['lastLogon'],
+                                    'Logon Count': entry['logonCount'],
+                                    'Member': entry['memberof']if type(entry['memberof']) is not list else ''
+                                })
+
+        
 
     tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")
 
     
 var1 = tk.IntVar()
-checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1)
+checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1, width=30)
 checkEntered.grid(column=2,row=1)
+
+var2 = tk.IntVar()
+checkEntered = ttk.Checkbutton(root, text="Auditor Mode", onvalue = 1, offvalue = 0, variable=var2, width=30, )
+checkEntered.grid(column=2,row=2)
 
 search_result = 0
 connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
@@ -158,7 +216,7 @@ connect.grid(column= 1, row = 4)
 generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
 generate.grid(column= 1, row =6)
 
-label3 = ttk.Label(root,text='version 1.0.3')
+label3 = ttk.Label(root,text='version 1.0.4')
 label3.grid(column=1,row=8)
 
 root.mainloop()

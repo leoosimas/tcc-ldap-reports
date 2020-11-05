@@ -218,9 +218,6 @@ connect.grid(column= 1, row = 4,pady=3)
 generate = ttk.Button(root, text = "Generate", width=25, style = 'TButton', command =generate_me)
 generate.grid(column= 1, row =6,pady=3)
 
-label5 = ttk.Label(root,text='',font='Calibri 10')
-label5.grid(column=2,row=4)
-
 label3 = ttk.Label(root,text='version 1.0.4',font='Calibri 10 italic')
 label3.grid(column=1,row=8)
 

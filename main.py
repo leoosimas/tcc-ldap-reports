@@ -6,6 +6,9 @@ import sys
 
 root = tk.Tk()
 
+photo = tk.PhotoImage(file = "ldap.png")
+root.iconphoto(False, photo)
+
 root.title("LDAP REPORT GENERATOR")
 root.minsize(300,150)
 

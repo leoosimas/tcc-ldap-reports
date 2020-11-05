@@ -1,5 +1,6 @@
 import tkinter as tk
 from tkinter import filedialog, Text, ttk,messagebox
+import tkinter.font as font
 import os,ldap3,csv,unicodecsv, re
 import sys
 
@@ -9,40 +10,35 @@ root.title("LDAP REPORT GENERATOR")
 root.minsize(300,150)
 
 
-label = ttk.Label(root,text='LDAP REPORT GENERATOR')
-label.grid(column=1,row=0)
+label = ttk.Label(root,text='LDAP REPORT GENERATOR',font='Calibri 14 bold')
+label.grid(column=1,row=0,pady=6)
 
-label = ttk.Label(root,text='Server')
-label.grid(column=0,row=1)
+label = ttk.Label(root,text='Server', font='Calibri 10 bold')
+label.grid(column=0,row=1,padx=8, sticky='W')
 
 
-label1 = ttk.Label(root,text='User')
-label1.grid(column=0,row=2)
+label1 = ttk.Label(root,text='User',font='Calibri 10 bold' )
+label1.grid(column=0,row=2,padx=8,sticky='W')
 
-label2 = ttk.Label(root,text='Password')
-label2.grid(column=0,row=3)
+label2 = ttk.Label(root,text='Password', font='Calibri 10 bold')
+label2.grid(column=0,row=3,padx=8,sticky='W')
 
 
 serverEntered = ttk.Entry(root, width = 30)
-serverEntered.grid(column=1,row=1)
-
-
+serverEntered.grid(column=1,row=1,pady=2)
 
 userEntered = ttk.Entry(root, width = 30)
-userEntered.grid(column=1,row=2)
-
-
+userEntered.grid(column=1,row=2,pady=2)
 
 passwdEntered = ttk.Entry(root,show = "*", width = 30)
-passwdEntered.grid(column=1,row=3)
+passwdEntered.grid(column=1,row=3,pady=2)
 
 
 
-#função para conectar via ldap e puxar todos as informações do Active Directory
 root.counter = 0
 
 
-
+#função para conectar via ldap e puxar todos as informações do Active Directory
 def click_me():
 
     
@@ -200,23 +196,33 @@ def generate_me():
 
     tk.messagebox.showinfo("LGR - Successfull", "Relatório Gerado")
 
-    
+
+style = ttk.Style()
+style.configure('TButton', font = 
+               ('calibri', 10, 'bold'), 
+                ) 
+
+
 var1 = tk.IntVar()
-checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1, width=30)
-checkEntered.grid(column=2,row=1)
+checkEntered = ttk.Checkbutton(root, text="LDAP over TLS", onvalue = 1, offvalue = 0, variable=var1, width=15)
+checkEntered.grid(column=2,row=1, padx=8)
 
 var2 = tk.IntVar()
-checkEntered = ttk.Checkbutton(root, text="Auditor Mode", onvalue = 1, offvalue = 0, variable=var2, width=30, )
-checkEntered.grid(column=2,row=2)
+checkEntered = ttk.Checkbutton(root, text="Auditor Mode", onvalue = 1, offvalue = 0, variable=var2, width=15)
+checkEntered.grid(column=2,row=2, padx=8)
 
 search_result = 0
-connect = ttk.Button(root, text = "Connect", width=30, command =click_me)
-connect.grid(column= 1, row = 4)
+connect = ttk.Button(root, text = "Connect", width=25, style = 'TButton', command =click_me)
+connect.grid(column= 1, row = 4,pady=3)
 
-generate = ttk.Button(root, text = "Generate", width=30, command =generate_me)
-generate.grid(column= 1, row =6)
+generate = ttk.Button(root, text = "Generate", width=25, style = 'TButton', command =generate_me)
+generate.grid(column= 1, row =6,pady=3)
 
-label3 = ttk.Label(root,text='version 1.0.4')
+label5 = ttk.Label(root,text='',font='Calibri 10')
+label5.grid(column=2,row=4)
+
+label3 = ttk.Label(root,text='version 1.0.4',font='Calibri 10 italic')
 label3.grid(column=1,row=8)
+
 
 root.mainloop()

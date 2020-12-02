@@ -187,7 +187,7 @@ def generate_me():
                 writer.writerow({'Username': entry['sAMAccountName'],
                                     'Name': entry['cn'],
                                     'Title': entry['title'] if type(entry['title']) is not list else '',
-                                    'Email': entry['mail']if type(entry['mail']) is not list else '',
+                                    'Email': entry['userPrincipalName']if type(entry['userPrincipalName']) is not list else '',
                                     'Telephone': entry['telephoneNumber']if type(entry['telephoneNumber']) is not list else '',
                                     'Department': entry['department'] if type(entry['department']) is not list else '',
                                     'Manager': entry['manager']if type(entry['manager']) is not list else '',

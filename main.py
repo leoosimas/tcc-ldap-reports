@@ -92,9 +92,9 @@ def click_me():
 
                 if var2.get() == 1:
 
-                    lista_atributos = ['sAMAccountName','cn', 'title','department','lastLogon','lastLogoff','logonCount','badPwdCount','badPasswordTime','memberof','manager','directReports','mail','telephoneNumber','whenCreated','whenChanged','dSCorePropagationData','company','objectClass', 'objectCategory','accountExpires']
+                    lista_atributos = ['sAMAccountName','cn', 'title','department','lastLogon','lastLogoff','logonCount','badPwdCount','badPasswordTime','memberof','manager','directReports','userPrincipalName','telephoneNumber','whenCreated','whenChanged','dSCorePropagationData','company','objectClass', 'objectCategory','accountExpires']
                 else:
-                    lista_atributos = ['sAMAccountName','cn','title','mail','telephoneNumber','department','lastLogon','logonCount','memberof','manager']
+                    lista_atributos = ['sAMAccountName','cn','title','userPrincipalName','telephoneNumber','department','lastLogon','logonCount','memberof','manager']
 
                 conn.search(domain, '(&(objectclass=person))', attributes=lista_atributos)
 
@@ -150,7 +150,7 @@ def generate_me():
                                     'Username': entry['sAMAccountName'],
                                     'Name': entry['cn'],
                                     'Title': entry['title'] if type(entry['title']) is not list else '',
-                                    'Email': entry['mail']if type(entry['mail']) is not list else '',
+                                    'Email': entry['userPrincipalName']if type(entry['userPrincipalName']) is not list else '',
                                     'Telephone': entry['telephoneNumber']if type(entry['telephoneNumber']) is not list else '',
                                     'Department': entry['department'] if type(entry['department']) is not list else '',
                                     'Manager': entry['manager']if type(entry['manager']) is not list else '',
